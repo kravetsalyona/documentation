@@ -52,7 +52,7 @@ window
     .postMessage(
         JSON.stringify({
             "jsonrpc" : "2.0",
-            "method" : "set",
+            "method" : "get",
             "params" : {"key" : "<ключ>"},
             "id" : 2,
         })
@@ -114,13 +114,12 @@ window.addEventListener('message', didRecieveLoonaStorageResponse);
 
 Решение:
 Сохраняем две ссылки.
-
 ```javascript
 const URL_FOR_HAND_OVER_NUMBER_ONE = 'https://dzen.ru/';
 const URL_FOR_HAND_OVER_NUMBER_TWO = 'https://dzen.ru/pogoda/saint-petersburg?lat=59.938951&lon=30.315635';
 ```
-Отправляем браузеру информацию о том, какие ссылки нужно предзагрузить. 
 
+Отправляем браузеру информацию о том, какие ссылки нужно предзагрузить. 
 ```javascript
 window
       .webkit
@@ -135,8 +134,8 @@ window
           })
       );
 ```
-Через 5 секунд, отправляем браузеру информацию на какую ссылку надо перейти(`https://dzen.ru/pogoda/saint-petersburg?lat=59.938951&lon=30.315635`).
 
+Через 5 секунд, отправляем браузеру информацию на какую ссылку надо перейти(`https://dzen.ru/pogoda/saint-petersburg?lat=59.938951&lon=30.315635`).
 ```javascript
 setTimeout(() => { 
                 window
@@ -228,6 +227,71 @@ export default function OursComponent(){
 Задача: Передать рефреш токен из одной нашей страницы на другую.
 
 Решение:
+
+Отправляем браузеру сохранить в хранилище  `loonaStorage` refresh токен.
+```javascript
+window
+    .webkit
+    .messageHandlers
+    .loonaStorage
+    .postMessage(
+        JSON.stringify({
+            "jsonrpc": "2.0",
+            "method": "set",
+            "params": {"key":   "token",
+                    "value": "yourstoken"},
+            "id" : 1,
+        })
+    );
+```
+
+Получаем refresh токен по ключу `token` из хранилища браузера `loonaStorage`.
+```javascript
+window
+    .webkit
+    .messageHandlers
+    .loonaStorage
+    .postMessage(
+        JSON.stringify({
+            "jsonrpc" : "2.0",
+            "method" : "get",
+            "params" : {"key" : "token"},
+            "id" : 2,
+        })
+    );
+```
+
+Отправляем браузеру информацию о том, какие ссылки нужно предзагрузить. 
+```javascript
+window
+      .webkit
+      .messageHandlers
+      .preloadPages
+      .postMessage(
+          JSON.stringify({
+              "jsonrpc" : "2.0",
+              "method" : "preload",
+              "params" : {"urls" : [URL_FOR_HAND_OVER_NUMBER_ONE, URL_FOR_HAND_OVER_NUMBER_TWO]},
+                  "id" : 3,
+          })
+      );
+```
+Отправляем браузеру информацию на какую ссылку надо перейти(`https://dzen.ru/pogoda/saint-petersburg?lat=59.938951&lon=30.315635`).
+```javascript
+ 
+window
+    .webkit
+    .messageHandlers
+    .preloadRedirect
+    .postMessage(
+        JSON.stringify({
+            "jsonrpc" : "2.0",
+            "method" : "get",
+            "params" : {"url" : URL_FOR_HAND_OVER_NUMBER_TWO},
+            "id" : 4,
+        })
+    );
+```
 
 Данный пример подробнее, с отображением двух ссылок на нашей странице. 
 Инструменты: React.
