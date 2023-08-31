@@ -65,11 +65,13 @@ window
 ```javascript
 window.addEventListener('message', handlerExample);
 ```
-handlerExample
-
-!описать пример handlerExample
-
-!Ответ от браузера приходит в формате JSON-RPC. 
+```javascript
+const handlerExample = (event) => {
+      /*  Описываем поход с данными(токеном) из loonaStorage на наш сервер для аутентификации и авторизации.
+          Ответ(объект) от сервера приходит в формате `JSON string`. Объект в формате JSON-RPC.
+      */
+    }
+```
 
 
 ### preloadPages
@@ -170,7 +172,7 @@ setTimeout(() => {
 Инструменты: React.
 
 ```javascript
-import { useEffect} from "react";
+import { useEffect } from "react";
 
 import "../styles/title.css";
 
@@ -205,7 +207,7 @@ export default function OursComponent(){
                         JSON.stringify({
                             "jsonrpc" : "2.0",
                             "method" : "get",
-                            "params" : {"url" : URL_FOR_HAND_OVER_NUMBER_ONE},
+                            "params" : {"url" : URL_FOR_HAND_OVER_NUMBER_TWO},
                             "id" : 4,
                         })
                     );
@@ -232,28 +234,41 @@ export default function OursComponent(){
 ```
 
 ### Предзагрузка страницы с аутентификацией
-Задача: Передать рефреш токен из одной нашей страницы на другую.
+Задача: Пользователь авторизован находится на странице Дзен-Статьи.
+Для нашего сайта, мы хотим реализовать в браузере предзагруженную страницу с Дзен-Видео.
+При этом, нам важно, чтобы  работала передача токена, чтобы пользователя не разлогинило при переходе на страницу с видео. 
 
 Решение:
 
-Отправляем браузеру сохранить в хранилище  `loonaStorage` refresh токен.
+1) Сохраняем две ссылки.
+```javascript
+const URL_FOR_HAND_OVER_NUMBER_ONE = 'https://dzen.ru/articles';
+const URL_FOR_HAND_OVER_NUMBER_TWO = 'https://dzen.ru/video';
+```
+
+2) Отправляем браузеру сохранить в хранилище  `loonaStorage` токен.
 ```javascript
 window
     .webkit
     .messageHandlers
-    .loonaStorage
+    .preloadPages
     .postMessage(
         JSON.stringify({
-            "jsonrpc": "2.0",
-            "method": "set",
-            "params": {"key":   "token",
-                    "value": "yourstoken"},
-            "id" : 1,
+            "jsonrpc" : "2.0",
+              "method" : "set",
+              "params" :  {"key" : "token",
+                          "value" : JSON.stringify({ "access_token": 'string',
+                                                    "refresh_token": 'string',
+                                                    "scope": 'string',
+                                                    "id_token": 'string',
+                                                  })
+                          },
+                          "id" : 1,
         })
     );
 ```
 
-Получаем refresh токен по ключу `token` из хранилища браузера `loonaStorage`.
+3) Получаем токен по ключу `token` из хранилища браузера `loonaStorage`.
 ```javascript
 window
     .webkit
@@ -269,7 +284,7 @@ window
     );
 ```
 
-Отправляем браузеру информацию о том, какие ссылки нужно предзагрузить. 
+4) Отправляем браузеру информацию о том, какие ссылки нужно предзагрузить. Ссылки на Дзен-Статьи и Дзен-Видео.
 ```javascript
 window
       .webkit
@@ -284,9 +299,8 @@ window
           })
       );
 ```
-Отправляем браузеру информацию на какую ссылку надо перейти(``).
+5) Отправляем браузеру информацию на какую ссылку надо перейти(`Ссылка на Дзен-Видео`).
 ```javascript
- 
 window
     .webkit
     .messageHandlers
@@ -300,6 +314,107 @@ window
         })
     );
 ```
+6) При клике пользователя по <ins>ссылке на Дзен-Видео</ins>, браузер отобразит предзагруженную страницу с погодой. Пользователь останется в авторизованной зоне.  
 
-Данный пример подробнее, с отображением двух ссылок на нашей странице. 
+Д
+Данный пример подробнее, с отображением двух ссылок на странице и передачей токена для предзагружаемой страницы Дзен-Видео. 
 Инструменты: React.
+```javascript
+
+import { useEffect } from "react";
+
+import "../styles/title.css";
+
+const URL_FOR_HAND_OVER_NUMBER_ONE = 'https://dzen.ru/articles';
+const URL_FOR_HAND_OVER_NUMBER_TWO = 'https://dzen.ru/video';
+
+export default function OurComponentWithAuthentification(){
+  
+    const didRecieveLoonaStorageResponse = (event) => {
+      /*  Описываем поход с данными(токеном) из loonaStorage на наш сервер для аутентификации и авторизации.
+          Ответ(объект) от сервера приходит в формате `JSON string`. Объект в формате JSON-RPC.
+      */
+    }
+
+    useEffect( () => {
+      if (window.webkit?.messageHandlers?.preloadPages) {
+            window
+                .webkit
+                .messageHandlers
+                .preloadPages
+                .postMessage(
+                    JSON.stringify({
+                        "jsonrpc" : "2.0",
+                          "method" : "set",
+                          "params" :  {"key" : "token",
+                                      "value" : JSON.stringify({ "access_token": 'string',
+                                                                "refresh_token": 'string',
+                                                                "scope": 'string',
+                                                                "id_token": 'string',
+                                                              })
+                                      },
+                                      "id" : 1,
+                    })
+                );
+            window
+                .webkit
+                .messageHandlers
+                .loonaStorage
+                .postMessage(
+                    JSON.stringify({
+                        "jsonrpc" : "2.0",
+                        "method" : "get",
+                        "params" : {"key" : "token"},
+                        "id" : 2,
+                    })
+                );
+
+            window
+                .webkit
+                .messageHandlers
+                .preloadPages
+                .postMessage(
+                    JSON.stringify({
+                        "jsonrpc" : "2.0",
+                        "method" : "preload",
+                        "params" : {"urls" : [URL_FOR_HAND_OVER_NUMBER_ONE, URL_FOR_HAND_OVER_NUMBER_TWO]},
+                            "id" : 3,
+                    })
+                );
+
+            window
+                .webkit
+                .messageHandlers
+                .preloadRedirect
+                .postMessage(
+                    JSON.stringify({
+                        "jsonrpc" : "2.0",
+                        "method" : "get",
+                        "params" : {"url" : URL_FOR_HAND_OVER_NUMBER_TWO},
+                        "id" : 4,
+                    })
+                );
+            
+    }
+
+    window.addEventListener('message', didRecieveLoonaStorageResponse);
+    return () => window.removeEventListener('storage', didRecieveLoonaStorageResponse);
+    
+  },[])
+
+    return (
+      <>
+          <a
+              href='https://dzen.ru/articles'
+          >
+              Ссылка на Дзен-Статьи
+          </a>
+          <br/>
+          <a 
+              href='https://dzen.ru/video'
+          >
+              Ссылка на Дзен-Видео
+          </a>
+    </>)
+}
+```
