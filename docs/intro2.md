@@ -1,8 +1,8 @@
 ---
-sidebar_position: 1
+sidebar_position: 2
 ---
 # API для предзагрузки страниц
-**Версия браузера**: `1.0.0`
+**Версия браузера**: `2.0.0`
 
 
 ## Введение
@@ -31,13 +31,18 @@ sidebar_position: 1
 window
     .webkit
     .messageHandlers
-    .loonaStorage
+    .GeneralHandler
     .postMessage(
         JSON.stringify({
             "jsonrpc": "2.0",
-            "method": "set",
-            "params": {"key":   "<ключ>",
-                    "value": "<значение>"},
+            "handler": "setLoonaStorage",
+            "body": {
+                    "method": "set",
+                    "params": {
+                                "key":   "<ключ>",
+                                "value": "<значение>"
+                                },
+                    },
             "id" : 1,
         })
     );
@@ -50,12 +55,17 @@ window
 window
     .webkit
     .messageHandlers
-    .loonaStorage
+    .GeneralHandler
     .postMessage(
         JSON.stringify({
             "jsonrpc" : "2.0",
-            "method" : "get",
-            "params" : {"key" : "<ключ>"},
+            "handler": "getLoonaStorage",
+            "body": {
+                    "method" : "get",
+                    "params" : {
+                                "key" : "<ключ>"
+                                },
+                    },
             "id" : 2,
         })
     );
@@ -83,13 +93,18 @@ const handlerExample = (event) => {
 window
     .webkit
     .messageHandlers
-    .preloadPages
+    .GeneralHandler
     .postMessage(
         JSON.stringify({
             "jsonrpc" : "2.0",
-            "method" : "preload",
-            "params" : {"urls" : ["<ссылка 1>","<ссылка 2>","<ссылка n>"]},
-                "id" : 3,
+            "handler": "preloadPages",
+            "body": {
+                    "method" : "preload",
+                    "params" : {
+                                "urls" : ["<ссылка 1>","<ссылка 2>","<ссылка n>"]
+                                },
+                    },
+            "id" : 3,
         })
     );
 ```
@@ -104,12 +119,17 @@ window
 window
     .webkit
     .messageHandlers
-    .preloadRedirect
+    .GeneralHandler
     .postMessage(
         JSON.stringify({ 
             "jsonrpc" : "2.0",
-            "method" : "preload",
-            "params" : {"url" : "<ссылка для перехода>"},
+            "handler": "preloadRedirect",
+            "body": {
+                    "method" : "preload",
+                    "params" : {
+                                "url" : "<ссылка для перехода>"
+                                },
+                    },
             "id" : 4,
         })
     );
@@ -342,7 +362,7 @@ export default function OurComponentWithAuthentification(){
             window
                 .webkit
                 .messageHandlers
-                .loonaStorage
+                .preloadPages
                 .postMessage(
                     JSON.stringify({
                         "jsonrpc" : "2.0",
