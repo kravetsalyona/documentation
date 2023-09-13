@@ -8,11 +8,11 @@ sidebar_position: 2
 ## Введение
 Механизм предназначен для ускорения работы веб интерфейсов с помощью предзагрузки страниц. Это улучшает восприятие переходов между страницами конечным пользователем. Также есть возможность сохранения и передачи необходимых данных (например, для аутентификации) в предзагружаемые страницы. 
 
-Механизм реализуется посредством вызова метода `postMessage` следующих `messageHandlers`:
-- `loonaStorage.set`
-- `loonaStorage.get`
+Механизм реализуется посредством вызова метода `postMessage` у`GeneralHandler`. Название handler мы передаём внутри сообщения:
+- `setLoonaStorage`
+- `getLoonaStorage`
 - `preloadPages`
-- `preloadRedirect`
+- `preloadRedirect` ()
 
 И передачи сообщения (объект) в формате `JSON string`. 
 
@@ -41,8 +41,8 @@ window
                     "params": {
                                 "key":   "<ключ>",
                                 "value": "<значение>"
-                                },
                     },
+            },
             "id" : 1,
         })
     );
@@ -64,8 +64,8 @@ window
                     "method" : "get",
                     "params" : {
                                 "key" : "<ключ>"
-                                },
                     },
+            },
             "id" : 2,
         })
     );
@@ -102,8 +102,8 @@ window
                     "method" : "preload",
                     "params" : {
                                 "urls" : ["<ссылка 1>","<ссылка 2>","<ссылка n>"]
-                                },
                     },
+            },
             "id" : 3,
         })
     );
@@ -128,8 +128,8 @@ window
                     "method" : "preload",
                     "params" : {
                                 "url" : "<ссылка для перехода>"
-                                },
                     },
+            },
             "id" : 4,
         })
     );
@@ -155,13 +155,18 @@ const URL_FOR_HAND_OVER_NUMBER_TWO = 'https://dzen.ru/pogoda/saint-petersburg?la
 window
       .webkit
       .messageHandlers
-      .preloadPages
+      .GeneralHandler
       .postMessage(
-          JSON.stringify({
-              "jsonrpc" : "2.0",
-              "method" : "preload",
-              "params" : {"urls" : [URL_FOR_HAND_OVER_NUMBER_ONE, URL_FOR_HAND_OVER_NUMBER_TWO]},
-                  "id" : 3,
+        JSON.stringify({
+            "jsonrpc" : "2.0",
+            "handler": "preloadPages",
+            "body": {
+                    "method" : "preload",
+                    "params" : {
+                                "urls" : [URL_FOR_HAND_OVER_NUMBER_ONE, URL_FOR_HAND_OVER_NUMBER_TWO]
+                    },
+            },
+            "id" : 3,
           })
       );
 ```
@@ -172,12 +177,17 @@ setTimeout(() => {
                 window
                     .webkit
                     .messageHandlers
-                    .preloadRedirect
+                    .GeneralHandler
                     .postMessage(
-                        JSON.stringify({
+                        JSON.stringify({ 
                             "jsonrpc" : "2.0",
-                            "method" : "get",
-                            "params" : {"url" : URL_FOR_HAND_OVER_NUMBER_TWO},
+                            "handler": "preloadRedirect",
+                            "body": {
+                                    "method" : "preload",
+                                    "params" : {
+                                                "url" : URL_FOR_HAND_OVER_NUMBER_TWO
+                                    },
+                            },
                             "id" : 4,
                         })
                     );
@@ -208,13 +218,18 @@ export default function OursComponent(){
             window
                 .webkit
                 .messageHandlers
-                .preloadPages
+                .GeneralHandler
                 .postMessage(
                     JSON.stringify({
                         "jsonrpc" : "2.0",
-                        "method" : "preload",
-                        "params" : {"urls" : [URL_FOR_HAND_OVER_NUMBER_ONE, URL_FOR_HAND_OVER_NUMBER_TWO]},
-                            "id" : 3,
+                        "handler": "preloadPages",
+                        "body": {
+                                "method" : "preload",
+                                "params" : {
+                                            "urls" :[URL_FOR_HAND_OVER_NUMBER_ONE, URL_FOR_HAND_OVER_NUMBER_TWO]
+                                },
+                        },
+                        "id" : 3,
                     })
                 );
 
@@ -222,12 +237,17 @@ export default function OursComponent(){
                 window
                     .webkit
                     .messageHandlers
-                    .preloadRedirect
+                    .GeneralHandler
                     .postMessage(
-                        JSON.stringify({
+                        JSON.stringify({ 
                             "jsonrpc" : "2.0",
-                            "method" : "get",
-                            "params" : {"url" : URL_FOR_HAND_OVER_NUMBER_TWO},
+                            "handler": "preloadRedirect",
+                            "body": {
+                                    "method" : "preload",
+                                    "params" : {
+                                                "url" : URL_FOR_HAND_OVER_NUMBER_TWO
+                                    },
+                            },
                             "id" : 4,
                         })
                     );
@@ -272,19 +292,23 @@ const URL_FOR_HAND_OVER_NUMBER_TWO = 'https://dzen.ru/video';
 window
     .webkit
     .messageHandlers
-    .loonaStorage
+    .GeneralHandler
     .postMessage(
         JSON.stringify({
-            "jsonrpc" : "2.0",
-              "method" : "set",
-              "params" :  {"key" : "token",
-                          "value" : JSON.stringify({ "access_token": 'string',
+            "jsonrpc": "2.0",
+            "handler": "setLoonaStorage",
+            "body": {
+                    "method" : "set",
+                    "params" :  {
+                        "key" : "token",
+                        "value" : JSON.stringify({ "access_token": 'string',
                                                     "refresh_token": 'string',
                                                     "scope": 'string',
                                                     "id_token": 'string',
-                                                  })
-                          },
-                          "id" : 1,
+                        })
+                    },
+            },
+            "id" : 1,
         })
     );
 ```
