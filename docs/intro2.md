@@ -8,7 +8,7 @@ sidebar_position: 2
 ## Введение
 Механизм предназначен для ускорения работы веб интерфейсов с помощью предзагрузки страниц. Это улучшает восприятие переходов между страницами конечным пользователем. Также есть возможность сохранения и передачи необходимых данных (например, для аутентификации) в предзагружаемые страницы. 
 
-Механизм реализуется посредством вызова метода `postMessage` у`GeneralHandler`. Название handler мы передаём внутри сообщения:
+Механизм реализуется посредством вызова метода `postMessage` у`LoonaGeneralHandler`. Название handler мы передаём внутри сообщения:
 - `loonaStorage get`
 - `loonaStorage set`
 - `preloadedPages preload`
@@ -31,7 +31,7 @@ sidebar_position: 2
 window
     .webkit
     .messageHandlers
-    .GeneralHandler
+    .LoonaGeneralHandler
     .postMessage(
         JSON.stringify({
             "jsonrpc": "2.0",
@@ -55,7 +55,7 @@ window
 window
     .webkit
     .messageHandlers
-    .GeneralHandler
+    .LoonaGeneralHandler
     .postMessage(
         JSON.stringify({
             "jsonrpc" : "2.0",
@@ -91,7 +91,7 @@ const handlerExample = (event) => {
 window
     .webkit
     .messageHandlers
-    .GeneralHandler
+    .LoonaGeneralHandler
     .postMessage(
         JSON.stringify({
             "jsonrpc" : "2.0",
@@ -117,7 +117,7 @@ window
 window
     .webkit
     .messageHandlers
-    .GeneralHandler
+    .LoonaGeneralHandler
     .postMessage(
         JSON.stringify({ 
             "jsonrpc" : "2.0",
@@ -152,7 +152,7 @@ const URL_FOR_HAND_OVER_NUMBER_TWO = 'https://dzen.ru/pogoda/saint-petersburg?la
 window
       .webkit
       .messageHandlers
-      .GeneralHandler
+      .LoonaGeneralHandler
       .postMessage(
         JSON.stringify({
             "jsonrpc" : "2.0",
@@ -174,7 +174,7 @@ setTimeout(() => {
                 window
                     .webkit
                     .messageHandlers
-                    .GeneralHandler
+                    .LoonaGeneralHandler
                     .postMessage(
                         JSON.stringify({ 
                             "jsonrpc" : "2.0",
@@ -233,7 +233,7 @@ export default function OursComponent(){
                 window
                     .webkit
                     .messageHandlers
-                    .GeneralHandler
+                    .LoonaGeneralHandler
                     .postMessage(
                         JSON.stringify({ 
                             "jsonrpc" : "2.0",
@@ -287,7 +287,7 @@ const URL_FOR_HAND_OVER_NUMBER_TWO = 'https://dzen.ru/video';
 window
     .webkit
     .messageHandlers
-    .GeneralHandler
+    .LoonaGeneralHandler
     .postMessage(
         JSON.stringify({
             "jsonrpc": "2.0",
@@ -313,7 +313,7 @@ window
 window
     .webkit
     .messageHandlers
-    .GeneralHandler
+    .LoonaGeneralHandler
     .postMessage(
         JSON.stringify({
             "jsonrpc" : "2.0",
@@ -349,7 +349,7 @@ window
 window
     .webkit
     .messageHandlers
-    .GeneralHandler
+    .LoonaGeneralHandler
     .postMessage(
         JSON.stringify({
             "jsonrpc" : "2.0",
@@ -389,7 +389,7 @@ export default function OurComponentWithAuthentification(){
             window
                 .webkit
                 .messageHandlers
-                .GeneralHandler
+                .LoonaGeneralHandler
                 .postMessage(
                     JSON.stringify({
                         "jsonrpc" : "2.0",
@@ -410,7 +410,7 @@ export default function OurComponentWithAuthentification(){
             window
                 .webkit
                 .messageHandlers
-                .GeneralHandler
+                .LoonaGeneralHandler
                 .postMessage(
                     JSON.stringify({
                         "jsonrpc" : "2.0",
@@ -442,7 +442,7 @@ export default function OurComponentWithAuthentification(){
             window
                 .webkit
                 .messageHandlers
-                .GeneralHandler
+                .LoonaGeneralHandler
                 .postMessage(
                     JSON.stringify({
                         "jsonrpc" : "2.0",
