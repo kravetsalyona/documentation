@@ -1,7 +1,7 @@
 ---
 sidebar_position: 2
 ---
-# API для предзагрузки страниц
+# API для предзагрузки страниц актуальная версия
 **Версия браузера**: `2.0.0`
 
 
@@ -9,10 +9,10 @@ sidebar_position: 2
 Механизм предназначен для ускорения работы веб интерфейсов с помощью предзагрузки страниц. Это улучшает восприятие переходов между страницами конечным пользователем. Также есть возможность сохранения и передачи необходимых данных (например, для аутентификации) в предзагружаемые страницы. 
 
 Механизм реализуется посредством вызова метода `postMessage` у`GeneralHandler`. Название handler мы передаём внутри сообщения:
-- `setLoonaStorage`
-- `getLoonaStorage`
-- `preloadPages`
-- `preloadRedirect` ()
+- `loonaStorage get`
+- `loonaStorage set`
+- `preloadedPages preload`
+- `preloadedPages redirect`
 
 И передачи сообщения (объект) в формате `JSON string`. 
 
@@ -21,7 +21,7 @@ sidebar_position: 2
 :::
 
 ## Методы
-### loonaStorage.set
+### loonaStorage set
 Сохраняет `<значение>` для `<ключа>` в хранилище браузера `loonaStorage`.
 
 `<значение>` и `<ключ>` принимают значение типа string.
@@ -35,7 +35,7 @@ window
     .postMessage(
         JSON.stringify({
             "jsonrpc": "2.0",
-            "handler": "setLoonaStorage",
+            "handler": "loonaStorage",
             "body": {
                     "method": "set",
                     "params": {
@@ -48,7 +48,7 @@ window
     );
 ```
 
-### loonaStorage.get
+### loonaStorage get
 Запрашивает значение по `<ключу>` из хранилища браузера `loonaStorage`.
 
 ```javascript
@@ -59,12 +59,10 @@ window
     .postMessage(
         JSON.stringify({
             "jsonrpc" : "2.0",
-            "handler": "getLoonaStorage",
+            "handler": "loonaStorage",
             "body": {
                     "method" : "get",
-                    "params" : {
-                                "key" : "<ключ>"
-                    },
+                    "params" : {"key" : "<ключ>"},
             },
             "id" : 2,
         })
@@ -84,7 +82,7 @@ const handlerExample = (event) => {
 ```
 
 
-### preloadPages
+### preloadedPages preload
 Регистрирует массив ссылок для перехода на другие сайты.
 
 В параметре `urls` передаётся массив ссылок. Ссылки должны быть абсолютными.
@@ -97,7 +95,7 @@ window
     .postMessage(
         JSON.stringify({
             "jsonrpc" : "2.0",
-            "handler": "preloadPages",
+            "handler": "preloadedPages",
             "body": {
                     "method" : "preload",
                     "params" : {
@@ -108,11 +106,11 @@ window
         })
     );
 ```
-### preloadRedirect
+### preloadedPages redirect
 Активирует переход по ранее зарегистрированной предзагруженной ссылке.
 
 :::tip
-Если ссылка не была ранее зарегистрирована и предзагружена с помощью метода preloadPages, то выполнится стандартная загрузка.
+Если ссылка не была ранее зарегистрирована и предзагружена с помощью метода preloadedPages, то выполнится стандартная загрузка.
 :::
 
 ```javascript
@@ -123,11 +121,10 @@ window
     .postMessage(
         JSON.stringify({ 
             "jsonrpc" : "2.0",
-            "handler": "preloadRedirect",
+            "handler": "preloadedPages",
             "body": {
-                    "method" : "preload",
-                    "params" : {
-                                "url" : "<ссылка для перехода>"
+                    "method" : "redirect",
+                    "params" : {"url" : "<ссылка для перехода>"
                     },
             },
             "id" : 4,
@@ -159,7 +156,7 @@ window
       .postMessage(
         JSON.stringify({
             "jsonrpc" : "2.0",
-            "handler": "preloadPages",
+            "handler": "preloadedPages",
             "body": {
                     "method" : "preload",
                     "params" : {
@@ -181,11 +178,10 @@ setTimeout(() => {
                     .postMessage(
                         JSON.stringify({ 
                             "jsonrpc" : "2.0",
-                            "handler": "preloadRedirect",
+                            "handler": "preloadedPages",
                             "body": {
-                                    "method" : "preload",
-                                    "params" : {
-                                                "url" : URL_FOR_HAND_OVER_NUMBER_TWO
+                                    "method" : "redirect",
+                                    "params" : {"url" : URL_FOR_HAND_OVER_NUMBER_TWO
                                     },
                             },
                             "id" : 4,
@@ -214,7 +210,7 @@ const POST_MESSAGE_DELAY = 5000;
 export default function OursComponent(){
 
     useEffect( () => {
-        if (window.webkit?.messageHandlers?.preloadPages) {
+        if (window.webkit?.messageHandlers?) {
             window
                 .webkit
                 .messageHandlers
@@ -222,7 +218,7 @@ export default function OursComponent(){
                 .postMessage(
                     JSON.stringify({
                         "jsonrpc" : "2.0",
-                        "handler": "preloadPages",
+                        "handler": "preloadedPages",
                         "body": {
                                 "method" : "preload",
                                 "params" : {
@@ -241,11 +237,10 @@ export default function OursComponent(){
                     .postMessage(
                         JSON.stringify({ 
                             "jsonrpc" : "2.0",
-                            "handler": "preloadRedirect",
+                            "handler": "preloadedPages",
                             "body": {
-                                    "method" : "preload",
-                                    "params" : {
-                                                "url" : URL_FOR_HAND_OVER_NUMBER_TWO
+                                    "method" : "redirect",
+                                    "params" : {"url" : URL_FOR_HAND_OVER_NUMBER_TWO
                                     },
                             },
                             "id" : 4,
@@ -296,7 +291,7 @@ window
     .postMessage(
         JSON.stringify({
             "jsonrpc": "2.0",
-            "handler": "setLoonaStorage",
+            "handler": "loonaStorage",
             "body": {
                     "method" : "set",
                     "params" :  {
@@ -318,12 +313,14 @@ window
 window
     .webkit
     .messageHandlers
-    .loonaStorage
+    .GeneralHandler
     .postMessage(
         JSON.stringify({
             "jsonrpc" : "2.0",
-            "method" : "get",
-            "params" : {"key" : "token"},
+            "handler": "loonaStorage",
+            "body": {
+                    "method" : "get",
+                    "params" : {"key" : "token"},
             "id" : 2,
         })
     );
@@ -332,15 +329,18 @@ window
 4) Отправляем браузеру информацию о том, какие ссылки нужно предзагрузить. Ссылки на Дзен-Статьи и Дзен-Видео.
 ```javascript
 window
-      .webkit
-      .messageHandlers
-      .preloadPages
-      .postMessage(
-          JSON.stringify({
-              "jsonrpc" : "2.0",
-              "method" : "preload",
-              "params" : {"urls" : [URL_FOR_HAND_OVER_NUMBER_ONE, URL_FOR_HAND_OVER_NUMBER_TWO]},
-                  "id" : 3,
+    .webkit
+    .messageHandlers
+    .GeneralHandler
+    .postMessage(
+        JSON.stringify({
+            "jsonrpc" : "2.0",
+            "handler": "preloadedPages",
+            "body": {
+                    "method" : "preload",
+                    "params" : {"urls" : [URL_FOR_HAND_OVER_NUMBER_ONE, URL_FOR_HAND_OVER_NUMBER_TWO]},
+        "id" : 3,
+        }
           })
       );
 ```
@@ -349,13 +349,16 @@ window
 window
     .webkit
     .messageHandlers
-    .preloadRedirect
+    .GeneralHandler
     .postMessage(
         JSON.stringify({
             "jsonrpc" : "2.0",
-            "method" : "get",
-            "params" : {"url" : URL_FOR_HAND_OVER_NUMBER_TWO},
+            "handler": "preloadedPages",
+            "body": {
+                    "method" : "redirect",
+                    "params" : {"url" : URL_FOR_HAND_OVER_NUMBER_TWO},
             "id" : 4,
+            }
         })
     );
 ```
@@ -382,61 +385,73 @@ export default function OurComponentWithAuthentification(){
     }
 
     useEffect( () => {
-      if (window.webkit?.messageHandlers?.preloadPages) {
+      if (window.webkit?.messageHandlers?) {
             window
                 .webkit
                 .messageHandlers
-                .preloadPages
+                .GeneralHandler
                 .postMessage(
                     JSON.stringify({
                         "jsonrpc" : "2.0",
-                          "method" : "set",
-                          "params" :  {"key" : "token",
-                                      "value" : JSON.stringify({ "access_token": 'string',
-                                                                "refresh_token": 'string',
-                                                                "scope": 'string',
-                                                                "id_token": 'string',
-                                                              })
-                                      },
+                        "handler": "loonaStorage",
+                        "body": {
+                                "method" : "set",
+                                "params" :  {
+                                            "key" : "token",
+                                            "value" : JSON.stringify({ "access_token": 'string',
+                                                                        "refresh_token": 'string',
+                                                                        "scope": 'string',
+                                                                        "id_token": 'string',
+                                                                    })
+                                            },
                                       "id" : 1,
                     })
                 );
             window
                 .webkit
                 .messageHandlers
-                .loonaStorage
+                .GeneralHandler
                 .postMessage(
                     JSON.stringify({
                         "jsonrpc" : "2.0",
-                        "method" : "get",
-                        "params" : {"key" : "token"},
+                        "handler": "loonaStorage",
+                        "body": {
+                                "method" : "get",
+                                "params" : {"key" : "token"},
                         "id" : 2,
+                        }
                     })
                 );
 
             window
                 .webkit
                 .messageHandlers
-                .preloadPages
+                .GeneralHandler
                 .postMessage(
                     JSON.stringify({
                         "jsonrpc" : "2.0",
-                        "method" : "preload",
-                        "params" : {"urls" : [URL_FOR_HAND_OVER_NUMBER_ONE, URL_FOR_HAND_OVER_NUMBER_TWO]},
+                        "handler": "preloadedPages",
+                        "body": {
+                                "method" : "preload",
+                                "params" : {"urls" : [URL_FOR_HAND_OVER_NUMBER_ONE, URL_FOR_HAND_OVER_NUMBER_TWO]},
                             "id" : 3,
+                        }
                     })
                 );
 
             window
                 .webkit
                 .messageHandlers
-                .preloadRedirect
+                .GeneralHandler
                 .postMessage(
                     JSON.stringify({
                         "jsonrpc" : "2.0",
-                        "method" : "get",
-                        "params" : {"url" : URL_FOR_HAND_OVER_NUMBER_TWO},
+                        "handler": "preloadedPages",
+                        "body": {
+                                "method" : "redirect",
+                                "params" : {"url" : URL_FOR_HAND_OVER_NUMBER_TWO},
                         "id" : 4,
+                        }
                     })
                 );
             
